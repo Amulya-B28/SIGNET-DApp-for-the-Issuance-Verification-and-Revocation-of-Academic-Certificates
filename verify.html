@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Verifier</title>
+    <!-- Reuses your existing stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ... (rest of the body content is the same as before) ... -->
+    <div class="container">
+        <!-- Public Navigation Bar -->
+        <nav>
+            <div class="logo">CertiChain</div>
+            <a href="index.html" class="connect-button" style="text-decoration: none;">Back to App Dashboard</a>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main>
+            <h2 id="page-title">Public Certificate Verifier</h2>
+            <p id="wallet-address" style="margin-bottom: 0;">
+                Use these tools to verify the authenticity of an institution, student, or certificate on the Sepolia testnet.
+            </p>
+
+            <!-- 
+            ================================================
+            CARD 1: VERIFY INSTITUTION
+            ================================================
+            -->
+            <section id="verify-institution-card" class="page">
+                <div class="card">
+                    <h4>1. Verify an Institution</h4>
+                    <p class="card-subtitle">Check if an Ethereum address is an authorized institution.</p>
+                    <form id="verifyInstitutionForm">
+                        <label for="inst-verify-address">Institution Address:</label>
+                        <input type="text" id="inst-verify-address" placeholder="0x..." required>
+                        <button type="submit">Verify Institution</button>
+                    </form>
+                    <div id="inst-verify-results" class="verify-results hidden">
+                        <!-- Institution verification results -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 
+            ================================================
+            CARD 2: VERIFY STUDENT
+            ================================================
+            -->
+            <section id="verify-student-card" class="page">
+                <div class="card">
+                    <h4>2. Verify a Student</h4>
+                    <p class="card-subtitle">Check if an Ethereum address belongs to a student who holds certificates.</p>
+                    <form id="verifyStudentForm">
+                        <label for="student-verify-address">Student Address:</label>
+                        <input type="text" id="student-verify-address" placeholder="0x..." required>
+                        <button type="submit">Verify Student</button>
+                    </form>
+                    <div id="student-verify-results" class="verify-results hidden">
+                        <!-- Student verification results -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 
+            ================================================
+            CARD 3: VERIFY CERTIFICATE
+            ================================================
+            -->
+            <section id="verify-certificate-card" class="page">
+                <div class="card">
+                    <h4>3. Verify a Full Certificate</h4>
+                    <p class="card-subtitle">Get the full details and status of a specific certificate ID.</p>
+                    <form id="verifyCertificateForm">
+                        <label for="cert-verify-id">Certificate ID (bytes32):</label>
+                        <input type="text" id="cert-verify-id" placeholder="0x..." required>
+                        <button type="submit">Verify Certificate</button>
+                    </form>
+                    <div id="cert-verify-results" class="verify-results hidden">
+                        <!-- Certificate verification results -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Ethers.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" type="application/javascript"></script>
+    <!-- Your Verifier Logic - Note the type="module" -->
+    <script src="verify.js" type="module"></script>
+</body>
+</html>

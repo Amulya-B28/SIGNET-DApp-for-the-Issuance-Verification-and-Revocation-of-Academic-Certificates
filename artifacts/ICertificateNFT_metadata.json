@@ -1,0 +1,103 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "adminBurn",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "studentAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "tokenURI",
+						"type": "string"
+					}
+				],
+				"name": "mintCertificate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"adminBurn(uint256)": {
+					"params": {
+						"tokenId": "The ID of the token to burn."
+					}
+				},
+				"mintCertificate(address,string)": {
+					"returns": {
+						"_0": "The ID of the newly minted token."
+					}
+				}
+			},
+			"title": "ICertificateNFT",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"adminBurn(uint256)": {
+					"notice": "Burns (destroys) an NFT."
+				},
+				"mintCertificate(address,string)": {
+					"notice": "Mints a new NFT to a student."
+				}
+			},
+			"notice": "Interface for the NFT contract. It defines the functions our Manager can call.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"ICertificateNFT.sol": "ICertificateNFT"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"ICertificateNFT.sol": {
+			"keccak256": "0x2f1645d79e134e614413fd3dbc3a554d5fd784157432f36d2bd1014554336a4e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://53b3a76a84ae036f07902bd88507b40e4aae84c3131c12585b2f48b90ffe006e",
+				"dweb:/ipfs/QmazhABRxtTVDnohuqU55D8QWvtKpcXiZ3qjN3zuZ6X8MP"
+			]
+		}
+	},
+	"version": 1
+}

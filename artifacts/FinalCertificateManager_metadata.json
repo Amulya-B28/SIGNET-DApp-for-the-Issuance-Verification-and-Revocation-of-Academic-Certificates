@@ -1,0 +1,529 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "certificateId",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "studentAddress",
+						"type": "address"
+					}
+				],
+				"name": "CertificateAccepted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "certificateId",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "nftTokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "studentAddress",
+						"type": "address"
+					}
+				],
+				"name": "CertificateIssued",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "certificateId",
+						"type": "bytes32"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "nftTokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "CertificateRevoked",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "institutionAddress",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					}
+				],
+				"name": "InstitutionAuthorized",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "institutionAddress",
+						"type": "address"
+					}
+				],
+				"name": "InstitutionRevoked",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "_certificateId",
+						"type": "bytes32"
+					}
+				],
+				"name": "acceptCertificate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_institutionAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "_name",
+						"type": "string"
+					}
+				],
+				"name": "addInstitution",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "_studentAddresses",
+						"type": "address[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "_studentNames",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "_credentialNames",
+						"type": "string[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "_tokenURIs",
+						"type": "string[]"
+					}
+				],
+				"name": "batchIssueCertificates",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"name": "certificates",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "id",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nftTokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "studentName",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "studentAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "credentialName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "tokenURI",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "issueDate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "issuingInstitution",
+						"type": "address"
+					},
+					{
+						"internalType": "enum FinalCertificateManager.CertificateStatus",
+						"name": "status",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "_certificateId",
+						"type": "bytes32"
+					}
+				],
+				"name": "getCertificateDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "bytes32",
+								"name": "id",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "uint256",
+								"name": "nftTokenId",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "studentName",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "studentAddress",
+								"type": "address"
+							},
+							{
+								"internalType": "string",
+								"name": "credentialName",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "tokenURI",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "issueDate",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "issuingInstitution",
+								"type": "address"
+							},
+							{
+								"internalType": "enum FinalCertificateManager.CertificateStatus",
+								"name": "status",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct FinalCertificateManager.Certificate",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_studentAddress",
+						"type": "address"
+					}
+				],
+				"name": "getStudentCertificates",
+				"outputs": [
+					{
+						"internalType": "bytes32[]",
+						"name": "",
+						"type": "bytes32[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "institutions",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isAuthorized",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_studentAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "_studentName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_credentialName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_tokenURI",
+						"type": "string"
+					}
+				],
+				"name": "issueCertificate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "nftContract",
+				"outputs": [
+					{
+						"internalType": "contract ICertificateNFT",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "_certificateId",
+						"type": "bytes32"
+					}
+				],
+				"name": "revokeCertificate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_institutionAddress",
+						"type": "address"
+					}
+				],
+				"name": "revokeInstitution",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_nftContractAddress",
+						"type": "address"
+					}
+				],
+				"name": "setNftContractAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "studentCertificates",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"revokeCertificate(bytes32)": {
+					"details": "This sets the status to Revoked AND burns the student's NFT."
+				},
+				"setNftContractAddress(address)": {
+					"details": "This must be called ONE time after deployment."
+				}
+			},
+			"title": "FinalCertificateManager",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"acceptCertificate(bytes32)": {
+					"notice": "Allows a student to accept a certificate issued to them."
+				},
+				"batchIssueCertificates(address[],string[],string[],string[])": {
+					"notice": "NEW: Allows an institution to issue multiple certificates at once."
+				},
+				"getCertificateDetails(bytes32)": {
+					"notice": "Retrieves the full details for one certificate. (Verifier's Page)"
+				},
+				"getStudentCertificates(address)": {
+					"notice": "Retrieves all certificate IDs for a given student. (Student Dashboard)"
+				},
+				"issueCertificate(address,string,string,string)": {
+					"notice": "Allows an authorized institution to issue a new certificate."
+				},
+				"revokeCertificate(bytes32)": {
+					"notice": "Allows the issuing institution (or owner) to revoke a certificate."
+				},
+				"setNftContractAddress(address)": {
+					"notice": "Allows the owner to link this Manager to the deployed NFT contract."
+				}
+			},
+			"notice": "This is the main \"Registrar\" contract. It manages roles, certificate status, and controls the NFT contract.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"FinalCertificateManager.sol": "FinalCertificateManager"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"FinalCertificateManager.sol": {
+			"keccak256": "0x289bb11c092370da077c861165b43080e7a15aaac267596d8115f9040ea71427",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7419434726c85336df7d970a27dd4bcb59536d5583547d1b7fdd4795a2d1b5d1",
+				"dweb:/ipfs/QmazEsp9KQkHUo9Mpxx5gVgxqXps27F2iDamJK7hB2tzF7"
+			]
+		},
+		"ICertificateNFT.sol": {
+			"keccak256": "0x2f1645d79e134e614413fd3dbc3a554d5fd784157432f36d2bd1014554336a4e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://53b3a76a84ae036f07902bd88507b40e4aae84c3131c12585b2f48b90ffe006e",
+				"dweb:/ipfs/QmazhABRxtTVDnohuqU55D8QWvtKpcXiZ3qjN3zuZ6X8MP"
+			]
+		}
+	},
+	"version": 1
+}

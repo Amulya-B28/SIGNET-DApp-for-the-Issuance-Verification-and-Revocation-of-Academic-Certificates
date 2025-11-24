@@ -1,0 +1,487 @@
+/* =========================================
+   1. CORE VARIABLES & RESET
+   ========================================= */
+:root {
+    /* Brand Colors - Adjusted for a more formal, deep purple/blue tone */
+    --primary-color: #8e44ad;
+    --primary-hover: #9b59b6;
+    --primary-glow: rgba(142, 68, 173, 0.4);
+    
+    /* Backgrounds */
+    --bg-color: #0f1016; /* Darker, less blue, more neutral dark */
+    --card-bg: rgba(30, 32, 40, 0.7); /* Higher opacity for better readability */
+    --sidebar-bg: rgba(25, 27, 35, 0.8);
+    --input-bg: rgba(0, 0, 0, 0.3);
+    
+    /* Borders & Lines */
+    --border-color: rgba(255, 255, 255, 0.12);
+    --border-focus: #8e44ad;
+    
+    /* Typography */
+    --text-color: #e0e0e0;
+    --text-muted: #8b9bb4; /* Cool grey for subtitles */
+    --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    outline: none; /* We handle focus manually */
+}
+
+body {
+    font-family: var(--font-stack);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    /* Subtle, professional mesh gradient */
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(142, 68, 173, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(60, 100, 200, 0.08), transparent 40%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Custom Scrollbar for a polished feel */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* =========================================
+   2. NAVIGATION
+   ========================================= */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 30px;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, #a29bfe 100%);
+    
+    /* Standard property (add this to try and silence the warning) */
+    background-clip: text;
+    
+    /* Browser-specific properties (Required for the effect) */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Button Standardisation */
+button, .connect-button {
+    background: var(--primary-color);
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 6px; /* Slightly sharper corners for "formal" look */
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+button:hover, .connect-button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* =========================================
+   3. LAYOUT & CARDS (Glassmorphism Refined)
+   ========================================= */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 25px;
+    animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card, .sidebar-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-card {
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+}
+
+/* Headings inside cards */
+h4 {
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* =========================================
+   4. SIDEBAR NAVIGATION
+   ========================================= */
+/* Sidebar Header */
+#sidebar h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px; /* Increased slightly for readability */
+    color: var(--text-muted);
+    border-bottom: none;
+    padding-bottom: 5px;
+    margin-bottom: 15px; /* Added breathing room */
+    font-weight: 700;
+}
+
+/* Sidebar List Container (Removes the white dots) */
+#sidebar ul {
+    list-style: none !important; /* This removes the bullet point */
+    padding: 0;
+    margin: 0;
+}
+
+#sidebar ul li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar Links */
+#sidebar ul li a {
+    display: flex; /* Better alignment if you add icons later */
+    align-items: center;
+    padding: 12px 16px;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 8px; /* Slightly rounder for modern feel */
+    margin-bottom: 6px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    border: 1px solid transparent; /* Prevents layout shift on hover */
+    background: transparent;
+}
+
+/* Hover State */
+#sidebar ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    transform: translateX(3px); /* Subtle movement effect */
+}
+
+/* Active State */
+#sidebar ul li a.active {
+    background-color: rgba(142, 68, 173, 0.1); 
+    color: #d19bf7; 
+    border: 1px solid rgba(142, 68, 173, 0.4); /* Stronger border definition */
+    font-weight: 600;
+    box-shadow: 0 0 10px rgba(142, 68, 173, 0.1); /* Faint glow */
+}
+
+/* =========================================
+   5. FORMS & INPUTS (Enhanced UI)
+   ========================================= */
+form label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    margin-top: 20px;
+    display: block;
+}
+form label:first-child {
+    margin-top: 0;
+}
+
+/* Standard Inputs */
+input[type="text"], 
+select {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px 16px;
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    font-family: var(--font-stack);
+}
+
+input[type="text"]:focus, 
+select:focus {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.2); /* Professional ring focus */
+}
+
+/* =========================================
+   6. SEARCH BAR ENHANCEMENT
+   ========================================= */
+/* Targeting inputs used for search specifically */
+#institute-search, 
+#cert-search {
+    /* Adding a Search Icon via CSS Background */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238b9bb4' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 15px center; /* Icon position */
+    padding-left: 45px; /* Text doesn't overlap icon */
+    font-size: 1rem;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+#institute-search::placeholder,
+#cert-search::placeholder {
+    color: #6c7a89;
+}
+
+/* =========================================
+   7. BATCH & CHECKLIST UI (Enhanced)
+   ========================================= */
+
+/* The Dropdown */
+#batch-select {
+    appearance: none; /* Remove default browser styling */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    cursor: pointer;
+}
+
+/* The Student Checklist Container */
+#batch-student-list {
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 0; /* Removing padding to let rows hit edges */
+    max-height: 350px;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* The "Select All" Header Area inside the checklist */
+#batch-student-list > div:first-child {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(5px);
+    z-index: 2;
+}
+
+/* Individual Student Rows (Generated by JS) */
+#student-checkboxes div {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.2s;
+}
+
+#student-checkboxes div:last-child {
+    border-bottom: none;
+}
+
+#student-checkboxes div:hover {
+    background: rgba(142, 68, 173, 0.1);
+    cursor: pointer;
+}
+
+/* Custom Checkbox Styling */
+input[type="checkbox"] {
+    accent-color: var(--primary-color);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Labels inside checkbox rows */
+#student-checkboxes label {
+    margin: 0; /* Override default label margin */
+    color: var(--text-color);
+    font-size: 0.95rem;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+/* =========================================
+   8. DATA LISTS (View Institutes/Certs)
+   ========================================= */
+.data-list {
+    margin-top: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.2);
+    overflow: hidden; /* rounded corners fix */
+}
+
+.list-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent; /* Reset */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.list-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.list-item:hover {
+    background: rgba(255,255,255,0.02);
+}
+
+.list-item h5 {
+    color: var(--text-color);
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+}
+
+.list-item p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.revoke-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    margin-top: 0;
+}
+
+.revoke-btn:hover {
+    background: #e74c3c;
+    color: white;
+    box-shadow: none;
+}
+
+/* =========================================
+   9. UTILITIES & WELCOME PAGE
+   ========================================= */
+.hidden { display: none !important; }
+
+/* Welcome Screen Verifier Button */
+.verifier-button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px 20px;
+    color: var(--text-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 25px;
+    transition: all 0.2s;
+}
+
+.verifier-button:hover {
+    border-color: var(--text-color);
+    color: var(--text-color);
+    background: rgba(255,255,255,0.05);
+    box-shadow: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+    .sidebar-card {
+        position: relative;
+        top: 0;
+    }
+}
+
+
+/* Status Indicators */
+.status-accepted {
+    color: #2ecc71 !important; /* Bright Green */
+    font-weight: 600;
+}
+
+.status-pending {
+    color: #f1c40f !important; /* Golden Yellow */
+    font-weight: 600;
+}
+
+.status-rejected, 
+.status-revoked {
+    color: #e74c3c !important; /* Red */
+    font-weight: 600;
+}
+
+/* Accept & Reject Buttons - Verifier Style */
+#certificate-list button {
+    background: transparent; /* Transparent background */
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-right: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+/* Hover Effect for ACCEPT button (First button) */
+#certificate-list button:first-of-type:hover {
+    border-color: #2ecc71;
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.1); /* Subtle Green Glow */
+    transform: translateY(-2px);
+}
+
+/* Hover Effect for REJECT button (Second button) */
+#certificate-list button:last-of-type:hover {
+    border-color: #e74c3c;
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1); /* Subtle Red Glow */
+    transform: translateY(-2px);
+}
