@@ -436,7 +436,10 @@ function handleRejectCertificate(e) {
 function init() {
     console.log("App Init");
     document.getElementById('connectButton').addEventListener('click', connectWallet);
-    
+    if (document.getElementById('connectButton')) {
+        document.getElementById('connectButton').addEventListener('click', connectWallet);
+    }
+
     // Forms
     document.getElementById('addInstitutionForm').addEventListener('submit', handleAddInstitution);
     document.getElementById('issueCertificateForm').addEventListener('submit', handleIssueCertificate);
@@ -449,6 +452,19 @@ function init() {
     document.getElementById('institute-search').addEventListener('input', (e) => renderInstitutesList(e.target.value.toLowerCase()));
     document.getElementById('cert-search').addEventListener('input', (e) => renderIssuedCertsList(e.target.value.toLowerCase()));
 
+    if (window.ethereum) {
+        window.ethereum.on('accountsChanged', (accounts) => {
+            // If the user switches accounts in MetaMask, reload the page
+            // This forces the app to reset and ask for a fresh connection
+            window.location.reload();
+        });
+
+        window.ethereum.on('chainChanged', (chainId) => {
+            // If the user switches networks (e.g., away from Sepolia), reload
+            window.location.reload();
+        });
+    }
+    
     dashboardLayout.classList.add('hidden');
     welcomeMessage.classList.remove('hidden');
 }
