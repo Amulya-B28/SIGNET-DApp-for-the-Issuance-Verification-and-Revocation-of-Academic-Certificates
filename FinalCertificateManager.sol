@@ -37,7 +37,7 @@ contract FinalCertificateManager {
         address studentAddress;     // Address of the student
         string credentialName;
         string tokenURI;            // The IPFS metadata link (ipfs://Qm...)
-        uint256 issueDate;
+        uint256 issueDate;          // Timestamp of issuance
         address issuingInstitution;
         CertificateStatus status;   // The "source of truth"
     }
@@ -124,7 +124,7 @@ contract FinalCertificateManager {
             studentAddress: _studentAddress,
             credentialName: _credentialName,
             tokenURI: _tokenURI,
-            issueDate: block.timestamp,
+            issueDate: block.timestamp, // <--- Correctly capturing the timestamp here
             issuingInstitution: msg.sender,
             status: CertificateStatus.Pending // Starts as Pending!
         });

@@ -1,25 +1,12 @@
 import { managerAddress, nftAddress, managerABI, nftABI } from './constants.js';
 
-// --- CONSTANTS & MOCK DATABASE ---
+// --- CONSTANTS & DATA ---
 
 // 1. Hardcoded Metadata URL (University Logo / Generic Certificate Image)
-const defaultTokenURI = "ipfs://bafkreicrp325375gvwh2ulw7fyv3raeg6za3cwnuobnl2smhjke737fkua";
+const defaultTokenURI = "ipfs://bafybeiexrylkafkpxnji3j2yz6xzdhxqb5xios3hpj5wmuwp3lkgj42dpu";
 
-// 2. Mock Database (The University's Student Records)
-const universityDatabase = {
-    "2024-2025": [
-        { name: "Alice Johnson", address: "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4" },
-        { name: "Bob Smith", address: "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2" },
-        { name: "Charlie Brown", address: "0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db" }
-    ],
-    "2025-2026": [
-        { name: "David Lee", address: "0x78731D3Ca6b7E34aC0F824c42a7cC18a495cabaB" },
-        { name: "Eva Green", address: "0x617F2E2fD72FD9D5503197092aC168c91465E7f2" }
-    ],
-    "2025-2026-B": [
-        { name: "Frank Wright", address: "0x17F6AD8Ef982297579C203069C1DbfFE4348c372" }
-    ]
-};
+// 2. Data Store (Replaces Mock Database)
+let currentBatchData = []; // Stores students fetched from backend
 
 // --- Global Variables ---
 let provider;
@@ -237,13 +224,12 @@ async function handleRevokeInstitution(e) {
     } catch (e) { console.error(e); alert("Error: " + e.message); }
 }
 
-// --- INSTITUTION: Single Issue (UPDATED) ---
+// --- INSTITUTION: Single Issue (Unchanged) ---
 async function handleIssueCertificate(event) {
     event.preventDefault();
     const sAddr = document.getElementById('student-address').value;
     const sName = document.getElementById('student-name').value;
     const cred = document.getElementById('credential-name').value;
-    // Use default hardcoded URI
     const uri = defaultTokenURI;
 
     try {
@@ -258,69 +244,122 @@ async function handleIssueCertificate(event) {
             document.getElementById('issue-results').classList.remove('hidden');
         }
         document.getElementById('issueCertificateForm').reset();
-        showPage('institution-view-certs-page');
+        if(pages['institution-view-certs-page'] && !pages['institution-view-certs-page'].classList.contains('hidden')) loadAndShowIssuedCertificates();
     } catch (e) { console.error(e); alert("Error: " + e.message); }
 }
 
-// --- INSTITUTION: Batch Issue (UPDATED) ---
-async function handleBatchIssue(event) {
-    event.preventDefault();
-    
-    // 1. Get Manual Credential Name
-    const credentialName = document.getElementById('batch-credential-name').value;
-    if (!credentialName) { alert("Enter a Credential Name"); return; }
-
-    // 2. Get Selected Students
-    const checkboxes = document.querySelectorAll('.student-checkbox:checked');
-    if (checkboxes.length === 0) { alert("Select students."); return; }
-
-    const sAddrs = [];
-    const sNames = [];
-    const creds = [];
-    const uris = [];
-
-    checkboxes.forEach(box => {
-        sAddrs.push(box.dataset.address);
-        sNames.push(box.dataset.name);
-        creds.push(credentialName); 
-        uris.push(defaultTokenURI); 
-    });
-
-    if (!confirm(`Issue ${sAddrs.length} certificates for "${credentialName}"?`)) return;
-
-    try {
-        const tx = await managerContract.batchIssueCertificates(sAddrs, sNames, creds, uris);
-        alert("Batch transaction sent...");
-        await tx.wait();
-        alert("Batch complete!");
-        
-        document.getElementById('batchIssueForm').reset();
-        document.getElementById('batch-student-list').classList.add('hidden');
-        showPage('institution-view-certs-page');
-    } catch (e) { console.error(e); alert("Error: " + e.message); }
-}
-
-// --- Helper for Batch Dropdown ---
-function handleBatchSelectChange(event) {
-    const batchId = event.target.value;
+// --- INSTITUTION: Batch Issue (UPDATED FOR BACKEND) ---
+// This needs to be exposed globally for the HTML onchange attribute
+window.handleBatchSelectChange = async function(event) {
+    const batchId = event.target.value; 
     const listDiv = document.getElementById('batch-student-list');
     const checkDiv = document.getElementById('student-checkboxes');
-    checkDiv.innerHTML = '';
+    
+    // Reset UI
+    checkDiv.innerHTML = '<p>Loading from Database...</p>';
+    listDiv.classList.remove('hidden');
 
-    if (!batchId) { listDiv.classList.add('hidden'); return; }
+    if (!batchId) { 
+        listDiv.classList.add('hidden'); 
+        return; 
+    }
 
-    const students = universityDatabase[batchId];
-    if (students) {
+    try {
+        // --- BACKEND CALL ---
+        const response = await fetch(`http://localhost:5000/get-batch/${batchId}`);
+        const students = await response.json();
+
+        if (students.length === 0) {
+            checkDiv.innerHTML = '<p>No eligible students found (or all have backlogs).</p>';
+            return;
+        }
+
+        // Save data globally
+        currentBatchData = students; 
+
+        // Render List
+        checkDiv.innerHTML = '';
         students.forEach((s, i) => {
             const d = document.createElement('div');
             d.style.marginBottom = '8px';
             d.innerHTML = `
-                <input type="checkbox" class="student-checkbox" id="s-${i}" data-address="${s.address}" data-name="${s.name}">
-                <label for="s-${i}" style="color:#ccc; margin-left:8px; cursor:pointer;"><strong>${s.name}</strong> <span style="font-size:0.8em; color:#777;">${s.address}</span></label>
+                <input type="checkbox" class="student-checkbox" id="s-${i}" data-index="${i}">
+                <label for="s-${i}" style="margin-left:8px; cursor:pointer;">
+                    <strong>${s.name}</strong> 
+                    <span style="font-size:0.8em; color:#777;">(Wallet: ${s.wallet.substring(0,6)}...)</span>
+                </label>
             `;
             checkDiv.appendChild(d);
         });
-        listDiv.classList.remove('hidden');
+
+    } catch (error) {
+        console.error(error);
+        checkDiv.innerHTML = '<p style="color:red;">Error: Backend Server not running on Port 5000.</p>';
+    }
+}
+
+async function handleBatchIssue(event) {
+    event.preventDefault();
+    
+    const credentialName = document.getElementById('batch-credential-name').value;
+    if (!credentialName) { alert("Enter a Credential Name"); return; }
+
+    const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+    if (checkboxes.length === 0) { alert("Select at least one student."); return; }
+    
+    // Prepare arrays
+    const sAddrs = [];
+    const sNames = [];
+    const creds = [];
+    const uris = [];
+    const issuedUSNs = []; // To sync with DB later
+
+    checkboxes.forEach(box => {
+        const index = box.dataset.index;
+        const student = currentBatchData[index];
+
+        sAddrs.push(student.wallet);
+        sNames.push(student.name);
+        creds.push(credentialName);
+        uris.push(student.uri);
+        issuedUSNs.push(student.usn);
+    });
+
+    if (!confirm(`Minting ${sAddrs.length} certificates. Confirm?`)) return;
+
+    try {
+        // 1. Blockchain Call
+        const tx = await managerContract.batchIssueCertificates(sAddrs, sNames, creds, uris);
+        alert("Transaction sent! Waiting for confirmation...");
+        const receipt = await tx.wait(); // Wait for mining
+
+        // 2. Parse Events to get IDs
+        const events = receipt.events.filter(x => x.event === "CertificateIssued");
+        
+        // 3. Sync with Backend (The "Dual Write")
+        let successCount = 0;
+        for(let i=0; i<events.length; i++) {
+            const certId = events[i].args.certificateId;
+            const usn = issuedUSNs[i]; // Corresponding USN
+
+            await fetch('http://localhost:5000/mark-issued', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usn: usn, certId: certId })
+            });
+            successCount++;
+        }
+
+        alert(`✅ Success! Issued ${successCount} certificates and synced to Database.`);
+        
+        // Cleanup
+        document.getElementById('batchIssueForm').reset();
+        document.getElementById('batch-student-list').classList.add('hidden');
+        currentBatchData = []; 
+
+    } catch (e) { 
+        console.error(e); 
+        alert("Process Failed: " + e.message); 
     }
 }
 
@@ -375,24 +414,42 @@ async function handleRevokeCert(e) {
     } catch (e) { console.error(e); alert("Error: " + e.message); }
 }
 
-// --- STUDENT: Load Certificates (FIXED) ---
+// --- STUDENT: Load Certificates ---
 async function loadStudentCertificates() {
     const list = document.getElementById('certificate-list');
-    list.innerHTML = '<p>Loading...</p>';
+    list.innerHTML = '<p style="color:#aaa;">Loading your certificates...</p>';
+    
     try {
         const ids = await managerContract.getStudentCertificates(currentAccount);
-        if (ids.length === 0) { list.innerHTML = '<p>No certificates.</p>'; return; }
+        if (ids.length === 0) { 
+            list.innerHTML = '<p style="color:#aaa;">No certificates found for this wallet.</p>'; 
+            return; 
+        }
         
         list.innerHTML = '';
-        for (const id of ids) {
+        for (const id of [...ids].reverse()) {
             const c = await managerContract.getCertificateDetails(id);
             const d = document.createElement('div');
             d.className = 'card';
-            let st = c.status === 1 ? 'Pending (Click to Accept)' : c.status === 2 ? 'Accepted' : 'Revoked';
+
+            // --- 1. Determine Status Class ---
+            let statusText = '';
+            let statusClass = '';
             
-            // Logic to show buttons ONLY if status is 1 (Pending)
+            if (c.status === 1) { // Pending
+                statusText = 'Pending';
+                statusClass = 'status-pending';
+            } else if (c.status === 2) { // Accepted
+                statusText = 'Accepted';
+                statusClass = 'status-accepted';
+            } else { // Revoked
+                statusText = 'Revoked';
+                statusClass = 'status-revoked';
+            }
+            
+            // --- 2. Create Buttons (Only if Pending) ---
             const buttonsHTML = c.status === 1 ? `
-                <div style="margin-top: 15px;">
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;">
                     <button class="accept-btn" data-id="${c.id}">Accept</button>
                     <button class="reject-btn" data-id="${c.id}">Reject</button>
                 </div>
@@ -401,21 +458,29 @@ async function loadStudentCertificates() {
             d.innerHTML = `
                 <h4>${c.credentialName}</h4>
                 <p><span>Student:</span> ${c.studentName}</p>
-                <p><span>Issued By:</span> ${c.issuingInstitution}</p>
-                <p><span>NFT ID:</span> ${c.nftTokenId}</p>
-                <p><span>Status:</span> <strong>${st}</strong></p>
-                <p><span>ID:</span> ${c.id}</p>
+                <p><span>Issued By:</span> ${c.issuingInstitution.substring(0, 10)}...${c.issuingInstitution.substring(38)}</p>
+                <p><span>NFT ID:</span> #${c.nftTokenId}</p>
+                
+                <p><span>Status:</span> <span class="${statusClass}">${statusText}</span></p>
+                
+                <p style="font-size:0.8em; color:#555; margin-top:10px;">ID: ${c.id}</p>
                 ${buttonsHTML}
-                <a href="https://sepolia.etherscan.io/nft/${nftAddress}/${c.nftTokenId}" target="_blank" style="margin-top:10px;display:block;">View on Etherscan</a>
+                
+                <div style="margin-top: 15px;">
+                    <a href="https://sepolia.etherscan.io/nft/${nftAddress}/${c.nftTokenId}" target="_blank">View on Etherscan ↗</a>
+                </div>
             `;
             list.appendChild(d);
         }
         
-        // Attach event listeners
+        // Re-attach listeners
         list.querySelectorAll('.accept-btn').forEach(b => b.addEventListener('click', handleAcceptCertificate));
         list.querySelectorAll('.reject-btn').forEach(b => b.addEventListener('click', handleRejectCertificate));
         
-    } catch (e) { console.error(e); list.innerHTML = '<p>Error.</p>'; }
+    } catch (e) { 
+        console.error(e); 
+        list.innerHTML = '<p style="color:red;">Error loading certificates.</p>'; 
+    }
 }
 
 async function handleAcceptCertificate(e) {
@@ -454,13 +519,10 @@ function init() {
 
     if (window.ethereum) {
         window.ethereum.on('accountsChanged', (accounts) => {
-            // If the user switches accounts in MetaMask, reload the page
-            // This forces the app to reset and ask for a fresh connection
             window.location.reload();
         });
 
         window.ethereum.on('chainChanged', (chainId) => {
-            // If the user switches networks (e.g., away from Sepolia), reload
             window.location.reload();
         });
     }
