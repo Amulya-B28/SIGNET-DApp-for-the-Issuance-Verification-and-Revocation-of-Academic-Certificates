@@ -18,84 +18,90 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log("✅ Connected to MongoDB"))
     .catch(err => console.error("❌ DB Connection Error:", err));
 
-// --- UPDATED SCHEMA (With SGPA & Cert ID) ---
+// --- UPDATED SCHEMA (Added Backlogs) ---
 const studentSchema = new mongoose.Schema({
-    usn: { type: String, unique: true }, // unique prevents duplicates
+    usn: { type: String, unique: true },
     name: String,
     semester: Number,
     encryptedWallet: String,
     
-    // Grades (Needed for Verifier Page)
+    // Grades
     sgpa: Number, 
     cgpa: Number,
+    backlogs: Number, // <--- NEW FIELD
     
     // Status
-    isEligible: Boolean,
+    isEligible: Boolean, // Now calculated based on backlogs
     isIssued: { type: Boolean, default: false },
     
-    // NFT Link (Needed for Revocation)
-    certificateId: String // Stores the 0x... ID from blockchain
+    // NFT Link
+    certificateId: String 
 });
 
 const Student = mongoose.model('Student', studentSchema);
 
 // --- ROUTES ---
 
-// 1. ADMIN: Seed Data (FIXED: Doesn't delete existing data)
+// 1. ADMIN: Seed Data (UPDATED LOGIC)
 app.get('/seed-data', async (req, res) => {
-    // 1. Define your Data
     const rawWallets = [
         { 
             usn: "1JS22CS001", name: "Alex", sem: 6, 
             wallet: "0x0ea18962eaa3bd3e7219672b2336482bd39e4863", 
-            sgpa: 9.5, cgpa: 9.2, isEligible: true 
+            sgpa: 9.5, cgpa: 9.2, backlogs: 0 // Eligible
         },
         { 
             usn: "1JS22CS002", name: "Sam", sem: 6, 
             wallet: "0xa990a878ACDa5618dAFB65f88d06D72412C9e580", 
-            sgpa: 4.0, cgpa: 5.5, isEligible: false // Fail
+            sgpa: 4.0, cgpa: 5.5, backlogs: 2 // NOT Eligible
         },
         { 
             usn: "1JS22CS003", name: "John", sem: 6, 
             wallet: "0xD34E5cD2E7e13b645eAA116D1cFaD4BBaD1292A1", 
-            sgpa: 9.8, cgpa: 9.6, isEligible: true 
+            sgpa: 9.8, cgpa: 9.6, backlogs: 0 // Eligible
         }
     ];
 
-    let addedCount = 0;
+    let updatedCount = 0;
 
     try {
-        // 2. Loop through and add ONLY if they don't exist
         for (const s of rawWallets) {
-            // Check if student already exists
-            const exists = await Student.findOne({ usn: s.usn });
+            // Logic: 0 Backlogs = True, Anything else = False
+            const calculatedEligibility = (s.backlogs === 0);
             
-            if (!exists) {
-                // Encrypt Wallet
-                const encrypted = CryptoJS.AES.encrypt(s.wallet, SECRET_KEY).toString();
-                
-                await Student.create({
-                    usn: s.usn,
-                    name: s.name,
-                    semester: s.sem,
-                    encryptedWallet: encrypted,
-                    sgpa: s.sgpa, // Added
-                    cgpa: s.cgpa, // Added
-                    isEligible: s.isEligible
-                });
-                addedCount++;
-            }
+            // Encrypt Wallet (Always update encryption to be safe)
+            const encrypted = CryptoJS.AES.encrypt(s.wallet, SECRET_KEY).toString();
+
+            // UPSERT: Update if exists, Insert if new
+            await Student.findOneAndUpdate(
+                { usn: s.usn }, // Find by USN
+                {
+                    $set: {
+                        name: s.name,
+                        semester: s.sem,
+                        encryptedWallet: encrypted,
+                        sgpa: s.sgpa,
+                        cgpa: s.cgpa,
+                        backlogs: s.backlogs,       // <--- Force Update This
+                        isEligible: calculatedEligibility // <--- Force Update This
+                    }
+                },
+                { upsert: true, new: true } // Create if not found
+            );
+            updatedCount++;
         }
-        res.json({ message: `✅ Database Checked. Added ${addedCount} new students. Existing data kept safe.` });
+        res.json({ message: `✅ Success! Updated/Added ${updatedCount} students with new Backlog criteria.` });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// 2. FRONTEND: Get Eligible Batch
+// 2. FRONTEND: Get Eligible Batch (Unchanged - uses isEligible)
 app.get('/get-batch/:semester', async (req, res) => {
     const { semester } = req.params;
 
+    // This query finds students where isEligible is TRUE.
+    // Since we set isEligible based on backlogs above, this works automatically.
     const students = await Student.find({ 
         semester: semester, 
         isEligible: true, 
@@ -109,7 +115,6 @@ app.get('/get-batch/:semester', async (req, res) => {
             usn: s.usn,
             name: s.name,
             wallet: realWallet,
-            // Privacy: Use ID in URI, not Name
             uri: `ipfs://credential_${s.usn}` 
         };
     });
@@ -117,9 +122,8 @@ app.get('/get-batch/:semester', async (req, res) => {
     res.json(readyForBlockchain);
 });
 
-// 3. FRONTEND: Mark students as Issued (Now saves the Cert ID!)
+// 3. FRONTEND: Mark students as Issued (Unchanged)
 app.post('/mark-issued', async (req, res) => {
-    // Frontend sends: { usn: "...", certId: "0x123..." }
     const { usn, certId } = req.body; 
 
     if (!usn || !certId) {
@@ -132,7 +136,7 @@ app.post('/mark-issued', async (req, res) => {
             { 
                 $set: { 
                     isIssued: true,
-                    certificateId: certId // <--- CRITICAL: Save the ID for revocation later
+                    certificateId: certId 
                 } 
             }
         );
@@ -142,7 +146,7 @@ app.post('/mark-issued', async (req, res) => {
     }
 });
 
-// 4. VERIFIER: Get Private Metadata (New Route)
+// 4. VERIFIER: Get Private Metadata (Unchanged)
 app.get('/verify-metadata/:certId', async (req, res) => {
     const { certId } = req.params;
     const student = await Student.findOne({ certificateId: certId });
@@ -154,7 +158,8 @@ app.get('/verify-metadata/:certId', async (req, res) => {
         usn: student.usn,
         sgpa: student.sgpa,
         cgpa: student.cgpa,
-        semester: student.semester
+        semester: student.semester,
+        backlogs: student.backlogs // Optional: Send backlogs to verifier if needed
     });
 });
 

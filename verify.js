@@ -1,6 +1,8 @@
 import { managerAddress, nftAddress, managerABI } from './constants.js';
 
-const sepoliaRPC = "https://eth-sepolia.g.alchemy.com/v2/kISazI6GNDXLr2ZPkBenP"; 
+//const sepoliaRPC = "https://eth-sepolia.g.alchemy.com/v2/kISazI6GNDXLr2ZPkBenP"; 
+const sepoliaRPC = "https://ethereum-sepolia.publicnode.com"; 
+
 const provider = new ethers.providers.JsonRpcProvider(sepoliaRPC);
 const contract = new ethers.Contract(managerAddress, managerABI, provider);
 
@@ -36,91 +38,66 @@ async function handleVerifyInstitution(event) {
 // --- 2. VERIFY STUDENT (Show ALL Certificates with USN) ---
 async function handleVerifyStudent(event) {
     event.preventDefault();
-    const address = document.getElementById('student-verify-address').value;
+    const address = document.getElementById('student-verify-address').value.trim();
 
-    if (!ethers.utils.isAddress(address)) return alert("Invalid Address");
+    if (!ethers.utils.isAddress(address)) return alert("Invalid Address Format");
 
     studentResultsDiv.classList.remove('hidden');
-    studentResultsDiv.innerHTML = '<div class="loader"></div> Scanning Ledger & Database...';
+    studentResultsDiv.innerHTML = '<div class="loader"></div> Scanning Ledger...';
 
     try {
-        // 1. Get all IDs from Blockchain
+        // 1. Direct Blockchain Call
         const certIds = await contract.getStudentCertificates(address);
 
-        if (certIds.length > 0) {
-            
-            // 2. Fetch Data for ALL certificates in parallel
-            // We map every ID to a "Promise" that fetches its specific details
-            const certsData = await Promise.all(certIds.map(async (certId) => {
-                
-                // A. Blockchain: Get Cert Details + Issuer Name
-                const cert = await contract.getCertificateDetails(certId);
-                const institution = await contract.institutions(cert.issuingInstitution);
-                
-                // B. Database: Get USN (Private Data)
-                let usn = "Private/Offline"; 
-                try {
-                    const response = await fetch(`http://localhost:5000/verify-metadata/${certId}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        usn = data.usn || "N/A";
-                    }
-                } catch (err) {
-                    // If DB is offline, we just show "Private"
-                }
-
-                return {
-                    id: certId,
-                    credential: cert.credentialName,
-                    issuer: institution.name, // The Issuer Name you wanted
-                    usn: usn,                 // The USN you wanted
-                    status: cert.status,
-                    date: new Date(cert.issueDate * 1000).toLocaleDateString()
-                };
-            }));
-
-            // 3. Build the HTML List
-            // We reverse() to show the newest degree at the top
-            let htmlList = certsData.reverse().map(c => {
-                // Style status
-                let statusBadge = c.status === 1 ? '<span class="text-gold">PENDING</span>' : 
-                                  c.status === 2 ? '<span class="text-green">VALID</span>' : 
-                                  '<span class="text-red">REVOKED</span>';
-                
-                return `
-                <div class="result-box" style="border-left: 4px solid #3498db; margin-bottom: 15px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #444; padding-bottom:8px; margin-bottom:8px;">
-                        <h4 style="margin:0; color:#fff;">${c.credential}</h4>
-                        <small>${statusBadge}</small>
-                    </div>
-                    
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div>
-                            <small style="color:#888;">Student USN</small><br>
-                            <strong style="color:#fff;">${c.usn}</strong>
-                        </div>
-                        <div>
-                            <small style="color:#888;">Issued By</small><br>
-                            <strong style="color:#fff;">${c.issuer}</strong>
-                        </div>
-                    </div>
-                    
-                    <p style="margin-top:8px; font-size:0.8em; color:#aaa;">
-                        Date: ${c.date} <br>
-                        ID: ${c.id.substring(0, 10)}...
-                    </p>
-                </div>`;
-            }).join('');
-
+        // 2. CHECK: Does this wallet have certificates?
+        if (certIds.length === 0) {
+            // STOP HERE: If 0 certs, we treat it as an Invalid/Wrong Address
             studentResultsDiv.innerHTML = `
-                <h4 class="text-blue">Found ${certIds.length} Certificate(s)</h4>
-                <p style="margin-bottom:15px; font-size:0.9em; color:#aaa;">Wallet: ${address}</p>
-                ${htmlList}
-            `;
-
-        } else {
-            studentResultsDiv.innerHTML = `<h4 class="text-red">No Certificates Found</h4><p>This wallet has not received any certificates.</p>`;
+                <div class="result-box" style="border-color: #e74c3c; background: rgba(231, 76, 60, 0.1);">
+                    <h4 class="text-red">❌ INVALID WALLET ADDRESS</h4>
+                    
+                </div>`;
+            return; 
         }
+
+        // 3. If certificates exist, fetch and show them
+        studentResultsDiv.innerHTML = `<div class="loader"></div> Found ${certIds.length} Certificate(s). Fetching Details...`;
+
+        const certsData = await Promise.all(certIds.map(async (certId) => {
+            const cert = await contract.getCertificateDetails(certId);
+            const institution = await contract.institutions(cert.issuingInstitution);
+            return {
+                id: certId,
+                credential: cert.credentialName,
+                issuer: institution.name,
+                status: cert.status,
+                date: new Date(cert.issueDate * 1000).toLocaleDateString()
+            };
+        }));
+
+        // 4. Generate the List HTML
+        const certsList = certsData.reverse().map(c => {
+            let statusBadge = c.status === 1 ? '<span class="text-gold">PENDING</span>' : 
+                              c.status === 2 ? '<span class="text-green">VALID</span>' : 
+                              '<span class="text-red">REVOKED</span>';
+            
+            return `
+            <div class="result-box" style="border-left: 4px solid #2ecc71; margin-bottom: 10px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <strong style="color:#fff;">${c.credential}</strong>
+                    <small>${statusBadge}</small>
+                </div>
+                <p style="margin:5px 0; font-size:0.9em;">Issued by: ${c.issuer}</p>
+                <small style="color:#aaa;">${c.date} • ID: ${c.id.substring(0, 8)}...</small>
+            </div>`;
+        }).join('');
+
+        studentResultsDiv.innerHTML = `
+            <h4 class="text-blue">Found ${certIds.length} Certificate(s)</h4>
+            <p style="margin-bottom:15px; font-size:0.9em; color:#aaa;">Wallet: ${address}</p>
+            ${certsList}
+        `;
+
     } catch (error) {
         console.error(error);
         studentResultsDiv.innerHTML = `<p class="text-red">Connection Error. Check Console.</p>`;
