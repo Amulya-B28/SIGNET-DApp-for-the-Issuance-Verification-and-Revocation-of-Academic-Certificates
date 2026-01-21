@@ -931,11 +931,11 @@
 			]
 		},
 		"CertificateNFT.sol": {
-			"keccak256": "0xe23419b8dae4c8c58fa2a33830b32d8aff205d764c7e893791a67856d3a20bf6",
+			"keccak256": "0x5d14ba2339b6d1b5dc24ae278342c9f2aeaae3c62944906e02f76468d7886b00",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://f3f49b8811543f0c0a104c613ea53c9a43d3ee0dc4a1047db700e681bba10076",
-				"dweb:/ipfs/QmWBM2vtHDuXUfETARkv31pAwKkNAG8t4rdStTG5CY2PzG"
+				"bzz-raw://4f13429ce806f37c33fa4ea6e01aff440f0f45ff5e2fb4d70890ebec0ebb0490",
+				"dweb:/ipfs/QmPYmDtWjSRZDRvmWX9GGyUp2weCvLSPYNN95kcAE63gPJ"
 			]
 		}
 	},

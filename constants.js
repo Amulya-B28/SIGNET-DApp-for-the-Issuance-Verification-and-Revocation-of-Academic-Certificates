@@ -1,72 +1,13 @@
 // --- 1. EDIT THIS SECTION! ---
 // Paste your deployed contract addresses here
-export const managerAddress = "0x344aEDeEa0BaC2C3efc163FD3051E862509A4D76";
-export const nftAddress = "0x964e063D29F7adf9453D11DB83813Ab09cc5428A";
+export const managerAddress = "0xDad5578D45842F2C3332dA66f2577c4DB223C806";
+export const nftAddress = "0x911967261031fEcB6A82185B1a5b163D175C8925";
 
 
 // --- 2. DO NOT EDIT (Full ABIs) ---
 
 // Full ABI for FinalCertificateManager
 export const managerABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "_certificateId",
-				"type": "bytes32"
-			}
-		],
-		"name": "acceptCertificate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_institutionAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			}
-		],
-		"name": "addInstitution",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_studentAddresses",
-				"type": "address[]"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_studentNames",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_credentialNames",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_tokenURIs",
-				"type": "string[]"
-			}
-		],
-		"name": "batchIssueCertificates",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -170,40 +111,12 @@ export const managerABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_studentAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_studentName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_credentialName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_tokenURI",
-				"type": "string"
-			}
-		],
-		"name": "issueCertificate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "bytes32",
 				"name": "_certificateId",
 				"type": "bytes32"
 			}
 		],
-		"name": "revokeCertificate",
+		"name": "acceptCertificate",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -214,9 +127,14 @@ export const managerABI = [
 				"internalType": "address",
 				"name": "_institutionAddress",
 				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
 			}
 		],
-		"name": "revokeInstitution",
+		"name": "addInstitution",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -224,12 +142,27 @@ export const managerABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_nftContractAddress",
-				"type": "address"
+				"internalType": "address[]",
+				"name": "_studentAddresses",
+				"type": "address[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_studentNames",
+				"type": "string[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_credentialNames",
+				"type": "string[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_tokenURIs",
+				"type": "string[]"
 			}
 		],
-		"name": "setNftContractAddress",
+		"name": "batchIssueCertificates",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -403,6 +336,34 @@ export const managerABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_studentAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_studentName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_credentialName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_tokenURI",
+				"type": "string"
+			}
+		],
+		"name": "issueCertificate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "nftContract",
 		"outputs": [
@@ -426,6 +387,45 @@ export const managerABI = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_certificateId",
+				"type": "bytes32"
+			}
+		],
+		"name": "revokeCertificate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_institutionAddress",
+				"type": "address"
+			}
+		],
+		"name": "revokeInstitution",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_nftContractAddress",
+				"type": "address"
+			}
+		],
+		"name": "setNftContractAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

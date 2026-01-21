@@ -47,9 +47,25 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
      * @notice A special function to allow the owner (the Manager) to burn a token.
      */
     function adminBurn(uint256 tokenId) public onlyOwner {
-        
-        // This is the correct function name from ERC721
         require(ownerOf(tokenId) != address(0), "Token does not exist."); 
         _burn(tokenId);
+    }
+
+    // --- NEW: SOULBOUND LOGIC ---
+    /**
+     * @notice Overrides the standard transfer function to BLOCK transfers.
+     * This ensures the NFT is "Soulbound" to the student.
+     */
+    function _update(address to, uint256 tokenId, address auth) internal override(ERC721) returns (address) {
+        address from = _ownerOf(tokenId);
+        
+        // Allow Minting (from 0 to Student)
+        // Allow Burning (from Student to 0)
+        // BLOCK Transfer (from Student A to Student B)
+        if (from != address(0) && to != address(0)) {
+            revert("CertiChain: Certificates are Soulbound and cannot be transferred");
+        }
+
+        return super._update(to, tokenId, auth);
     }
 }

@@ -1,0 +1,395 @@
+/* =========================================
+   1. SETUP & FONTS
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* GitHub Universe Palette (Backgrounds) */
+    --bg-canvas: #040d21;       /* Ultra-Deep Blue */
+    --bg-card: rgba(22, 27, 34, 0.7); /* Glassy Cards */
+    --bg-input: #0d1117;        /* Input Background */
+    --bg-hover: rgba(177, 186, 196, 0.12);
+    
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: #b3b7bb;
+    
+    /* RESTORED: Your Original Brand Colors */
+    --primary-color: #8e44ad;   /* Purple */
+    --primary-hover: #9b59b6;   /* Lighter Purple */
+    --primary-glow: rgba(142, 68, 173, 0.4);
+
+    /* Accents */
+    --border-default: #30363d;
+    --border-active: #58a6ff;   /* Focus Blue */
+    --btn-danger: #e74c3c;      /* Red */
+
+    --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =========================================
+   2. GLOBAL BODY & THE "UNIVERSE" GLOW
+   ========================================= */
+* { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+body {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: var(--font-stack);
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 0;
+}
+
+/* THE GLOW: Fixed Center */
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1400px;
+    height: 700px;
+    background: radial-gradient(ellipse at center, rgba(124, 114, 255, 0.35) 0%, rgba(124, 114, 255, 0.1) 40%, transparent 70%);
+    filter: blur(80px);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Secondary Glow */
+body::before {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(217, 70, 239, 0.15) 0%, transparent 60%);
+    filter: blur(60px);
+    z-index: -1;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+/* =========================================
+   3. NAVIGATION
+   ========================================= */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+}
+
+.logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+}
+
+/* Navbar Button (Hidden by default, shown after login) */
+.connect-button {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.connect-button:hover {
+    border-color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================
+   4. HOME PAGE HERO
+   ========================================= */
+#welcome-message {
+    text-align: center;
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.8s ease-out;
+}
+
+#page-title {
+    font-size: 6rem;
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #e9e9e9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#wallet-address {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    max-width: 600px;
+}
+
+/* Action Buttons (Center) */
+.action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    backdrop-filter: blur(10px);
+}
+
+.hero-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.hero-btn svg { fill: currentColor; opacity: 0.8; }
+
+/* =========================================
+   5. DASHBOARD LAYOUT
+   ========================================= */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 40px;
+    margin-top: 40px;
+    margin-bottom: 60px;
+    align-items: start;
+}
+
+/* Sidebar */
+#sidebar { position: sticky; top: 24px; }
+#sidebar h4 {
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; margin: 24px 0 8px 12px;
+}
+#sidebar ul { list-style: none; }
+#sidebar ul li a {
+    display: block; padding: 8px 12px; margin-bottom: 2px;
+    border-radius: 6px; color: #c9d1d9; text-decoration: none; font-size: 14px;
+    transition: background 0.15s;
+}
+#sidebar ul li a:hover { background-color: var(--bg-hover); color: white; }
+#sidebar ul li a.active {
+    background-color: rgba(142, 68, 173, 0.15); /* Purple Tint */
+    color: #d19bf7; /* Light Purple Text */
+    font-weight: 600; border-left: 2px solid var(--primary-color); border-radius: 0 6px 6px 0;
+}
+
+/* Cards */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(12px);
+}
+
+h2#dashboard-page-title {
+    font-size: 1.5rem; font-weight: 600; color: white;
+    border-bottom: 1px solid var(--border-default);
+    padding-bottom: 16px; margin-bottom: 24px;
+}
+
+h4 { font-size: 1rem; color: white; font-weight: 600; margin-bottom: 16px; }
+
+/* =========================================
+   6. FORMS & INPUTS
+   ========================================= */
+form label {
+    display: block; font-size: 13px; font-weight: 600; color: white;
+    margin-bottom: 8px; margin-top: 20px;
+}
+form label:first-child { margin-top: 0; }
+
+input[type="text"], select {
+    width: 100%; background-color: var(--bg-input);
+    border: 1px solid var(--border-default); border-radius: 6px;
+    padding: 8px 12px; color: white; font-size: 14px;
+    font-family: inherit; transition: all 0.2s ease;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: var(--primary-color); /* Purple Focus */
+    box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.3);
+}
+
+select option { background-color: #0d1117; color: white; padding: 10px; }
+
+/* RESTORED: Primary Button Style (Purple) 
+   Used for: Issue Certificate, Authorize, Batch Issue
+*/
+button[type="submit"] {
+    background: var(--primary-color);
+    color: white;
+    border: 1px solid transparent;
+    padding: 10px 24px; /* Matches original sizing */
+    font-size: 14px; 
+    font-weight: 600; 
+    border-radius: 6px;
+    cursor: pointer; 
+    margin-top: 24px; 
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+button[type="submit"]:hover { 
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+/* =========================================
+   7. LISTS & REVOKE BUTTONS
+   ========================================= */
+.data-list {
+    margin-top: 16px; border: 1px solid var(--border-default);
+    border-radius: 6px; overflow: hidden; background-color: #0d1117;
+}
+
+.list-item {
+    padding: 16px; border-bottom: 1px solid var(--border-default);
+    display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.2s;
+}
+.list-item:last-child { border-bottom: none; }
+.list-item:hover { background-color: var(--bg-hover); }
+
+.list-item h5 { font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px; }
+.list-item p { font-size: 12px; color: var(--text-secondary); font-family: monospace; }
+
+/* RESTORED: Revoke Button Style (Transparent/Red) 
+   Used for: Action buttons inside the list
+*/
+.list-item button {
+    background: rgba(231, 76, 60, 0.1) !important;
+    border: 1px solid rgba(231, 76, 60, 0.3) !important;
+    color: var(--btn-danger) !important;
+    font-size: 12px !important; 
+    padding: 6px 12px !important;
+    border-radius: 6px !important; 
+    cursor: pointer !important;
+    margin-top: 0 !important; 
+    width: auto !important;
+    transition: all 0.2s ease;
+}
+
+.list-item button:hover {
+    background: var(--btn-danger) !important;
+    color: white !important;
+    border-color: var(--btn-danger) !important;
+    box-shadow: none !important;
+}
+
+/* =========================================
+   8. UTILITIES & BATCH LIST
+   ========================================= */
+.hidden { display: none !important; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+#batch-student-list {
+    background-color: var(--bg-input); border: 1px solid var(--border-default);
+    border-radius: 6px; margin-top: 16px;
+}
+#batch-student-list > div:first-child {
+    background-color: #161b22; padding: 10px 12px; border-bottom: 1px solid var(--border-default);
+}
+#student-checkboxes div {
+    padding: 10px 12px; border-bottom: 1px solid var(--border-default);
+    display: flex; gap: 8px; align-items: center; color: white;
+}
+#student-checkboxes div:last-child { border-bottom: none; }
+#student-checkboxes div:hover { background-color: var(--bg-hover); }
+
+@media (max-width: 768px) {
+    .dashboard-layout { grid-template-columns: 1fr; }
+    #page-title { font-size: 3.5rem; }
+    .action-buttons { flex-direction: column; }
+}
+/* --- FIX FOR STUDENT CERTIFICATE CARDS --- */
+
+/* --- STATUS INDICATORS --- */
+.status-accepted {
+    color: #2ecc71 !important; /* Bright Green */
+    font-weight: 400;
+}
+
+.status-pending {
+    color: #f1c40f !important; /* Golden Yellow */
+    font-weight: 400;
+}
+
+.status-rejected, 
+.status-revoked {
+    color: #e74c3c !important; /* Red */
+    font-weight: 400;
+}
+
+/* --- STUDENT ACTION BUTTONS (Outline Style) --- */
+
+/* Base Style for both buttons */
+.accept-btn, .reject-btn {
+    background: transparent;
+    border: 1px solid #444; /* Default subtle border */
+    color: #888; /* Muted text default */
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-right: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+/* Hover Effect: ACCEPT (Green Glow) */
+.accept-btn:hover {
+    border-color: #2ecc71;
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+}
+
+/* Hover Effect: REJECT (Red Glow) */
+.reject-btn:hover {
+    border-color: #e74c3c;
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
+}
